@@ -1,4 +1,13 @@
 <resources>
-    <string name="app_name">globalentrymonitor</string>
+    <string name="app_name">Global Entry Times</string>
     <string name="action_settings">Settings</string>
+
+    <!-- App strings -->
+    <string name="choose_location_prompt">Choose location</string>
+    <string name="select_one">Select One</string>
+    <string name="use_current_location">Use current location</string>
+    <string name="notify_me">Notify me when something opens</string>
+    <string name="check_every">Check every</string>
+    <string name="find_times">Find openings</string>
+
 </resources>
