@@ -14,8 +14,11 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.observe
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.globalentrymonitor.databinding.ContentMainBinding
+import com.example.globalentrymonitor.databinding.OpenTimesBinding
 import com.example.globalentrymonitor.models.InterviewLocation
+import com.example.globalentrymonitor.models.OpenTime
 import com.example.globalentrymonitor.viewmodels.InterviewLocationsVm
 import com.example.globalentrymonitor.viewmodels.OpenTimesViewModel
 import kotlinx.android.synthetic.main.activity_main.*
@@ -47,7 +50,7 @@ class MainActivity : AppCompatActivity() {
         binding.openTimes = availableTimesVm
 
         initData()
-
+        initRecyclerView()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -66,8 +69,22 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun initRecyclerView() {
+
+        val timesAdapter = OpenTimesAdapter(ArrayList())
+        val viewManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+        availableTimes.apply {
+            layoutManager = viewManager
+            adapter = timesAdapter
+        }
+
+        availableTimesVm.times.observe(this, Observer { times ->
+            timesAdapter.setData(times)
+        })
+    }
+
     private fun initData() {
-        Log.d( "APP", "Initializing data ...")
+        Log.d("APP", "Initializing data ...")
         val adapter = ArrayAdapter<String>(this, android.R.layout.simple_spinner_item)
 
         locationsVm.locations.observe(this, Observer { locations ->
@@ -82,7 +99,7 @@ class MainActivity : AppCompatActivity() {
         locationsVm.selectedPosition.observe(this) {
             Log.d("APP", "Location selected: $it")
             val loc = locationsVm.locations.value?.get(it) ?: locationsVm.locations.value?.first()
-            availableTimesVm.location.postValue((loc as InterviewLocation).locationCode)
+            availableTimesVm.location.postValue((loc as InterviewLocation).id.toString())
         }
 
         availableTimesVm.times.observe(this, Observer { times ->
@@ -92,6 +109,8 @@ class MainActivity : AppCompatActivity() {
                     "Found time ${t.startTimestamp} - ${t.endTimestamp}"
                 )
             }
+
+
         })
     }
 }

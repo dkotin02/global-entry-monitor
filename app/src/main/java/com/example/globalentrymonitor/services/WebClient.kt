@@ -4,7 +4,6 @@ import com.example.globalentrymonitor.models.InterviewLocation
 import com.example.globalentrymonitor.models.OpenTime
 import retrofit2.http.GET
 import retrofit2.http.Query
-import java.nio.ByteOrder
 
 interface WebClient {
 
