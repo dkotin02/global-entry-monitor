@@ -16,6 +16,7 @@ class InterviewLocationsVm : ViewModel() {
 
     var locations = liveData(Dispatchers.IO) {
         val newLocations = dataSource.getLocations()
+        Log.d("APP", "Done fetching data")
         emit(newLocations)
     }
 

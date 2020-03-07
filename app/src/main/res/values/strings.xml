@@ -12,6 +12,7 @@
     <string name="check_every">Check every</string>
     <string name="find_times">Find openings</string>
     <string name="closest_openings">Closest openings</string>
+    <string name="find_locations">Find Locations</string>
 
     <string name="no_openings">No openings found :(. Try again later or choose a different location</string>
 </resources>

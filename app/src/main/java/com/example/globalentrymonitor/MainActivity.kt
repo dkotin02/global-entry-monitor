@@ -4,11 +4,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
-import android.widget.AdapterView
-import android.widget.AdapterView.OnItemSelectedListener
 import android.widget.ArrayAdapter
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
@@ -16,9 +12,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.observe
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.globalentrymonitor.databinding.ContentMainBinding
-import com.example.globalentrymonitor.databinding.OpenTimesBinding
 import com.example.globalentrymonitor.models.InterviewLocation
-import com.example.globalentrymonitor.models.OpenTime
 import com.example.globalentrymonitor.viewmodels.InterviewLocationsVm
 import com.example.globalentrymonitor.viewmodels.OpenTimesViewModel
 import kotlinx.android.synthetic.main.activity_main.*
@@ -27,7 +21,7 @@ import kotlinx.android.synthetic.main.content_main.*
 
 class MainActivity : AppCompatActivity() {
 
-    private val availableTimesVm by lazy {
+    private val openTimesVm by lazy {
         ViewModelProvider.AndroidViewModelFactory
             .getInstance(this.application)
             .create(OpenTimesViewModel::class.java)
@@ -39,15 +33,15 @@ class MainActivity : AppCompatActivity() {
             .create(InterviewLocationsVm::class.java)
     }
 
+    private lateinit var binding: ContentMainBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
-        val binding: ContentMainBinding =
-            DataBindingUtil.setContentView(this, R.layout.content_main)
+        binding = DataBindingUtil.setContentView(this, R.layout.content_main)
         binding.locations = locationsVm
-        binding.openTimes = availableTimesVm
+        binding.openTimes = openTimesVm
 
         initData()
         initRecyclerView()
@@ -71,15 +65,15 @@ class MainActivity : AppCompatActivity() {
 
     private fun initRecyclerView() {
 
-        val timesAdapter = OpenTimesAdapter(ArrayList())
+        val timesAdapter = OpenTimesAdapter(ArrayList(), "GMT")
         val viewManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         availableTimes.apply {
             layoutManager = viewManager
             adapter = timesAdapter
         }
 
-        availableTimesVm.times.observe(this, Observer { times ->
-            timesAdapter.setData(times)
+        openTimesVm.times.observe(this, Observer { times ->
+            timesAdapter.setData(times, openTimesVm.location.value!!.tzData)
         })
     }
 
@@ -99,10 +93,10 @@ class MainActivity : AppCompatActivity() {
         locationsVm.selectedPosition.observe(this) {
             Log.d("APP", "Location selected: $it")
             val loc = locationsVm.locations.value?.get(it) ?: locationsVm.locations.value?.first()
-            availableTimesVm.location.postValue((loc as InterviewLocation).id.toString())
+            openTimesVm.location.postValue((loc as InterviewLocation))
         }
 
-        availableTimesVm.times.observe(this, Observer { times ->
+        openTimesVm.times.observe(this, Observer { times ->
             times.forEach { t ->
                 Log.d(
                     "APP",
